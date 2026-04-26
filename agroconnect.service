@@ -1,0 +1,33 @@
+[Unit]
+Description=AgroConnect Flask Application (Gunicorn)
+After=network.target mongodb.service
+Wants=mongodb.service
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/agroconnect
+
+# Environment variables (créer /etc/agroconnect/.env)
+EnvironmentFile=/etc/agroconnect/.env
+
+# Command to run
+ExecStart=/var/www/agroconnect/.venv/bin/gunicorn \
+    --workers 4 \
+    --worker-class sync \
+    --bind 127.0.0.1:8000 \
+    --timeout 60 \
+    --access-logfile /var/log/agroconnect/access.log \
+    --error-logfile /var/log/agroconnect/error.log \
+    app:app
+
+# Restart policy
+Restart=always
+RestartSec=10
+
+# Security
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

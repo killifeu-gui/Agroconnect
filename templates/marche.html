@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>AgroConnect — Marché</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--gd:#0a2e1a;--gm:#1a5c35;--gb:#2ecc71;--gold:#f0b429;--glass:rgba(255,255,255,0.06);--border:rgba(46,204,113,0.15);}
+body{font-family:'Segoe UI',sans-serif;background:var(--gd);color:white;min-height:100vh;}
+.navbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,46,26,0.97);backdrop-filter:blur(12px);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.nav-left{display:flex;align-items:center;gap:20px;}
+.nav-logo{font-weight:800;font-size:20px;background:linear-gradient(90deg,var(--gb),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-btn{background:transparent;border:1px solid rgba(46,204,113,0.25);color:rgba(255,255,255,0.65);padding:7px 14px;border-radius:22px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.nav-btn:hover,.nav-btn.active{background:rgba(46,204,113,0.15);border-color:var(--gb);color:var(--gb);}
+.notif-badge{position:relative;display:flex;align-items:center;}
+.notif-count{position:absolute;top:-6px;right:-6px;background:#dc2626;color:white;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.container{max-width:1400px;margin:0 auto;padding:76px 20px 40px;}
+.marche-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;}
+.marche-title{font-size:32px;font-weight:800;color:var(--gb);}
+.marche-actions{display:flex;gap:12px;}
+.btn-primary{background:linear-gradient(135deg,var(--gm),var(--gb));color:white;border:none;border-radius:22px;padding:10px 24px;font-weight:700;cursor:pointer;transition:opacity 0.2s;}
+.btn-primary:hover{opacity:0.85;}
+.filters{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+.filter-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);padding:8px 16px;border-radius:20px;font-size:13px;cursor:pointer;transition:all 0.2s;font-weight:600;}
+.filter-btn:hover,.filter-btn.active{background:rgba(46,204,113,0.15);border-color:var(--gb);color:var(--gb);}
+.produits-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-bottom:40px;}
+.produit-card{background:var(--glass);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:all 0.3s;cursor:pointer;}
+.produit-card:hover{border-color:rgba(46,204,113,0.35);transform:translateY(-4px);box-shadow:0 8px 24px rgba(46,204,113,0.15);}
+.prod-image{width:100%;height:200px;object-fit:cover;background:linear-gradient(135deg,var(--gm),var(--gb));}
+.prod-body{padding:16px;}
+.prod-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.prod-name{font-weight:700;font-size:15px;color:var(--gb);}
+.stock-badge{background:rgba(34,197,94,0.15);color:#86efac;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;}
+.stock-badge.low{background:rgba(240,180,41,0.15);color:var(--gold);}
+.stock-badge.out{background:rgba(220,38,38,0.15);color:#fca5a5;}
+.prod-desc{font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:10px;line-height:1.4;}
+.prod-vendeur{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid rgba(46,204,113,0.1);margin-bottom:10px;}
+.vendeur-avatar{width:28px;height:28px;border-radius:50%;background:var(--gm);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.vendeur-info{flex:1;font-size:11px;color:rgba(255,255,255,0.6);}
+.vendeur-name{color:var(--gb);font-weight:600;}
+.prod-footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+.prod-prix{font-size:18px;font-weight:800;color:var(--gold);}
+.prod-prix-unite{font-size:11px;color:rgba(255,255,255,0.4);display:block;}
+.btn-acheter{background:rgba(46,204,113,0.2);border:1px solid var(--gb);color:var(--gb);padding:6px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-acheter:hover{background:rgba(46,204,113,0.3);}
+.btn-acheter:disabled{opacity:0.5;cursor:not-allowed;}
+.empty-state{text-align:center;padding:60px 20px;color:rgba(255,255,255,0.3);}
+.empty-icon{font-size:64px;margin-bottom:20px;}
+.empty-text{font-size:18px;margin-bottom:10px;}
+.empty-subtext{font-size:13px;color:rgba(255,255,255,0.2);}
+.sidebar{position:fixed;top:76px;right:20px;width:300px;max-height:calc(100vh - 96px);overflow-y:auto;z-index:500;}
+.sidebar-card{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px;}
+.sidebar-title{font-size:14px;font-weight:800;color:var(--gb);margin-bottom:12px;}
+.notif-item{background:rgba(46,204,113,0.05);border-left:3px solid var(--gb);padding:12px;border-radius:8px;margin-bottom:10px;font-size:12px;cursor:pointer;transition:all 0.2s;}
+.notif-item:hover{background:rgba(46,204,113,0.1);}
+.notif-item.unread{border-left-color:#fbbf24;background:rgba(251,191,36,0.08);}
+.notif-pseudo{color:var(--gb);font-weight:700;display:block;}
+.notif-text{color:rgba(255,255,255,0.6);margin-top:4px;}
+.notif-time{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;}
+.tabs{display:flex;gap:10px;margin-bottom:20px;border-bottom:1px solid rgba(46,204,113,0.15);padding-bottom:10px;}
+.tab-btn{background:none;border:none;color:rgba(255,255,255,0.5);padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px;border-bottom:2px solid transparent;transition:all 0.2s;}
+.tab-btn.active{color:var(--gb);border-bottom-color:var(--gb);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.commande-item{background:rgba(46,204,113,0.05);border:1px solid rgba(46,204,113,0.15);border-radius:10px;padding:12px;margin-bottom:10px;font-size:12px;}
+.commande-nom{color:var(--gb);font-weight:700;margin-bottom:4px;}
+.commande-detail{color:rgba(255,255,255,0.6);margin-bottom:4px;}
+.commande-prix{color:var(--gold);font-weight:700;}
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:2000;}
+.modal.show{display:flex;}
+.modal-content{background:var(--gd);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:500px;width:90%;}
+.modal-title{font-size:20px;font-weight:800;color:var(--gb);margin-bottom:16px;}
+.modal-body{margin-bottom:20px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:12px;font-weight:700;color:rgba(255,255,255,0.6);margin-bottom:6px;text-transform:uppercase;}
+.form-group input,.form-group select{width:100%;padding:10px 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(46,204,113,0.2);border-radius:8px;color:white;font-size:13px;outline:none;}
+.form-group input:focus,.form-group select:focus{border-color:var(--gb);}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;}
+.btn-cancel{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;}
+.btn-save{background:linear-gradient(135deg,var(--gm),var(--gb));color:white;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-weight:700;}
+@media(max-width:1200px){.sidebar{display:none;}}
+@media(max-width:768px){.produits-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}.marche-header{flex-direction:column;align-items:flex-start;gap:16px;}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-left">
+    <div class="nav-logo">🛒 Marché AgroConnect</div>
+  </div>
+  <div style="display:flex;gap:12px;">
+    <button class="nav-btn" onclick="window.location='/home'">← Retour</button>
+    <button class="nav-btn notif-badge" id="notif-btn" onclick="toggleNotifications()">
+      🔔
+      <span class="notif-count" id="notif-count" style="display:none;">0</span>
+    </button>
+    <button class="nav-btn" onclick="window.location='/logout'" style="border-color:rgba(231,76,60,0.4);color:rgba(231,76,60,0.7);">🚪</button>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="marche-header">
+    <h1 class="marche-title">🛍️ Marché agricole sénégalais</h1>
+    <div class="marche-actions">
+      <button class="btn-primary" onclick="showTab('mes-commandes')">📦 Mes achats</button>
+      <button class="btn-primary" onclick="showTab('commandes-recues')">📥 Mes ventes</button>
+    </div>
+  </div>
+
+  <div id="marche-view">
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterProducts('Tous',this)">Tous les produits</button>
+      <button class="filter-btn" onclick="filterProducts('Légumes',this)">🥬 Légumes</button>
+      <button class="filter-btn" onclick="filterProducts('Fruits',this)">🍎 Fruits</button>
+    </div>
+    <div class="produits-grid" id="produits-grid">
+      <div style="text-align:center;padding:60px;color:rgba(255,255,255,0.3);grid-column:1/-1;">
+        <div style="font-size:48px;margin-bottom:16px;">⏳</div>
+        <div style="font-size:16px;">Chargement des produits...</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="mes-commandes-view" class="tab-content">
+    <h2 style="color:var(--gb);margin-bottom:20px;font-size:24px;">📦 Mes achats</h2>
+    <div id="mes-commandes-list"></div>
+  </div>
+
+  <div id="commandes-recues-view" class="tab-content">
+    <h2 style="color:var(--gb);margin-bottom:20px;font-size:24px;">📥 Commandes reçues</h2>
+    <div id="commandes-recues-list"></div>
+  </div>
+</div>
+
+<div class="sidebar">
+  <div class="sidebar-card">
+    <div class="sidebar-title">🔔 Notifications récentes</div>
+    <div id="notif-list" style="max-height:400px;overflow-y:auto;">
+      <div style="color:rgba(255,255,255,0.4);font-size:12px;">Aucune notification</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ACHETER -->
+<div class="modal" id="modal-acheter">
+  <div class="modal-content">
+    <div class="modal-title">🛒 Acheter</div>
+    <div class="modal-body">
+      <div style="margin-bottom:16px;">
+        <div style="color:var(--gb);font-weight:700;font-size:16px;" id="modal-prod-name"></div>
+        <div style="color:rgba(255,255,255,0.6);font-size:13px;margin-top:4px;" id="modal-prod-desc"></div>
+        <div style="color:var(--gold);font-weight:700;font-size:18px;margin-top:8px;" id="modal-prod-prix"></div>
+      </div>
+      <div class="form-group">
+        <label>Quantité</label>
+        <input type="number" id="modal-quantite" min="1" value="1">
+      </div>
+      <div style="background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.2);border-radius:10px;padding:12px;">
+        <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:4px;">Prix total :</div>
+        <div style="color:var(--gold);font-weight:800;font-size:20px;" id="modal-total-prix">0 FCFA</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-acheter')">Annuler</button>
+      <button class="btn-save" onclick="confirmerAchat()">Acheter maintenant</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentProduitId = null;
+let currentPrix = 0;
+
+// Charger les produits
+async function loadProduits(categorie = 'Tous') {
+  try {
+    let url = '/api/produits';
+    if (categorie !== 'Tous') {
+      url += '?categorie=' + categorie;
+    }
+    const res = await fetch(url);
+    const data = await res.json();
+    
+    const grid = document.getElementById('produits-grid');
+    if (data.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1;">
+          <div class="empty-icon">🌾</div>
+          <div class="empty-text">Aucun produit disponible</div>
+          <div class="empty-subtext">Reviens bientôt pour découvrir les nouveaux produits</div>
+        </div>
+      `;
+      return;
+    }
+    
+    grid.innerHTML = data.map(p => `
+      <div class="produit-card">
+        <img src="${p.image}" alt="${p.nom}" class="prod-image" onerror="this.src='https://via.placeholder.com/280x200?text=${p.nom}'">
+        <div class="prod-body">
+          <div class="prod-header">
+            <div class="prod-name">${p.nom}</div>
+            <div class="stock-badge ${p.stock === 0 ? 'out' : p.stock < 10 ? 'low' : ''}">
+              ${p.stock === 0 ? 'Rupture' : p.stock < 10 ? 'Limité' : p.stock + ' en stock'}
+            </div>
+          </div>
+          <div class="prod-desc">${p.description}</div>
+          <div class="prod-vendeur">
+            <div class="vendeur-avatar">${p.vendeur_avatar}</div>
+            <div class="vendeur-info">
+              <div class="vendeur-name">${p.vendeur_pseudo}</div>
+              <div>${p.region}</div>
+            </div>
+          </div>
+          <div class="prod-footer">
+            <div>
+              <div class="prod-prix">${p.prix} FCFA</div>
+              <span class="prod-prix-unite">/ unité</span>
+            </div>
+            <button class="btn-acheter" ${p.stock === 0 ? 'disabled' : ''} onclick="openModalAcheter('${p._id}', '${p.nom}', '${p.description}', ${p.prix}, ${p.stock})">
+              ${p.stock === 0 ? 'Rupture' : 'Acheter'}
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    console.error(e);
+    document.getElementById('produits-grid').innerHTML = '<div style="color:red;padding:20px;">Erreur de chargement</div>';
+  }
+}
+
+// Filtrer les produits
+function filterProducts(categorie, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadProduits(categorie);
+}
+
+// Ouvrir modal acheter
+function openModalAcheter(prodId, nom, desc, prix, stock) {
+  currentProduitId = prodId;
+  currentPrix = prix;
+  document.getElementById('modal-prod-name').textContent = nom;
+  document.getElementById('modal-prod-desc').textContent = desc;
+  document.getElementById('modal-prod-prix').textContent = prix + ' FCFA';
+  document.getElementById('modal-quantite').value = 1;
+  document.getElementById('modal-quantite').max = stock;
+  updateTotal();
+  document.getElementById('modal-acheter').classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+function updateTotal() {
+  const qty = parseInt(document.getElementById('modal-quantite').value) || 1;
+  document.getElementById('modal-total-prix').textContent = (currentPrix * qty) + ' FCFA';
+}
+
+document.getElementById('modal-quantite')?.addEventListener('input', updateTotal);
+
+// Confirmer achat
+async function confirmerAchat() {
+  const qty = parseInt(document.getElementById('modal-quantite').value) || 1;
+  try {
+    const res = await fetch('/api/commander', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({produit_id: currentProduitId, quantite: qty})
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert('✅ Commande confirmée ! Le vendeur a été notifié.');
+      closeModal('modal-acheter');
+      loadProduits();
+      loadNotifications();
+    } else {
+      alert('❌ ' + data.error);
+    }
+  } catch (e) {
+    console.error(e);
+    alert('Erreur');
+  }
+}
+
+// Charger les notifications
+async function loadNotifications() {
+  try {
+    const res = await fetch('/api/notifications');
+    const data = await res.json();
+    const list = document.getElementById('notif-list');
+    const badge = document.getElementById('notif-count');
+    
+    const unread = data.filter(n => !n.lue).length;
+    if (unread > 0) {
+      badge.textContent = unread;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+    
+    if (data.length === 0) {
+      list.innerHTML = '<div style="color:rgba(255,255,255,0.4);font-size:12px;">Aucune notification</div>';
+      return;
+    }
+    
+    list.innerHTML = data.map(n => `
+      <div class="notif-item ${!n.lue ? 'unread' : ''}" onclick="markNotifAsRead('${n._id}')">
+        <span class="notif-pseudo">📦 ${n.acheteur_pseudo || 'Nouveau'}</span>
+        <div class="notif-text">${n.message}</div>
+        <div class="notif-time">${n.date}</div>
+      </div>
+    `).join('');
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function toggleNotifications() {
+  const sidebar = document.querySelector('.sidebar');
+  sidebar.style.display = sidebar.style.display === 'none' ? 'fixed' : 'none';
+}
+
+async function markNotifAsRead(notifId) {
+  try {
+    await fetch(`/api/notification/${notifId}/lire`, {method: 'POST'});
+    loadNotifications();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// Mes commandes
+async function loadMesCommandes() {
+  try {
+    const res = await fetch('/api/mes-commandes');
+    const data = await res.json();
+    const list = document.getElementById('mes-commandes-list');
+    
+    if (data.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.3);">Aucune commande</div>';
+      return;
+    }
+    
+    list.innerHTML = data.map(c => `
+      <div class="commande-item">
+        <div class="commande-nom">${c.produit_nom}</div>
+        <div class="commande-detail">De: <strong>${c.vendeur_pseudo}</strong></div>
+        <div class="commande-detail">Quantité: ${c.quantite} | Date: ${c.date}</div>
+        <div class="commande-prix">Total: ${c.prix_total} FCFA</div>
+      </div>
+    `).join('');
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// Commandes reçues
+async function loadCommandesRecues() {
+  try {
+    const res = await fetch('/api/commandes-recues');
+    const data = await res.json();
+    const list = document.getElementById('commandes-recues-list');
+    
+    if (data.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.3);">Aucune commande reçue</div>';
+      return;
+    }
+    
+    list.innerHTML = data.map(c => `
+      <div class="commande-item">
+        <div class="commande-nom">${c.produit_nom}</div>
+        <div class="commande-detail">De: <strong>${c.acheteur_pseudo}</strong></div>
+        <div class="commande-detail">Quantité: ${c.quantite} | Date: ${c.date}</div>
+        <div class="commande-prix">Total: ${c.prix_total} FCFA</div>
+      </div>
+    `).join('');
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function showTab(tab) {
+  document.getElementById('marche-view').style.display = 'none';
+  document.getElementById('mes-commandes-view').classList.remove('active');
+  document.getElementById('commandes-recues-view').classList.remove('active');
+  
+  if (tab === 'mes-commandes') {
+    document.getElementById('mes-commandes-view').classList.add('active');
+    loadMesCommandes();
+  } else if (tab === 'commandes-recues') {
+    document.getElementById('commandes-recues-view').classList.add('active');
+    loadCommandesRecues();
+  }
+}
+
+// Initialiser
+window.addEventListener('load', () => {
+  loadProduits();
+  loadNotifications();
+  setInterval(loadNotifications, 10000); // Actualiser les notifs chaque 10s
+});
+</script>
+</body>
+</html>

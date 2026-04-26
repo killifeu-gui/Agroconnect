@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>AgroConnect</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--gd:#0a2e1a;--gm:#1a5c35;--gb:#2ecc71;--gold:#f0b429;--glass:rgba(255,255,255,0.06);--border:rgba(46,204,113,0.15);}
+body{font-family:'Segoe UI',sans-serif;background:var(--gd);color:white;min-height:100vh;}
+.navbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,46,26,0.97);backdrop-filter:blur(12px);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-logo-box{width:34px;height:34px;background:linear-gradient(135deg,var(--gb),var(--gold));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.nav-logo-text{font-weight:800;font-size:20px;background:linear-gradient(90deg,var(--gb),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-search input{background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:22px;padding:8px 18px;color:white;width:240px;outline:none;font-size:13px;}
+.nav-search input::placeholder{color:rgba(255,255,255,0.35);}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.nav-btn{background:transparent;border:1px solid rgba(46,204,113,0.25);color:rgba(255,255,255,0.65);padding:7px 14px;border-radius:22px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.nav-btn:hover,.nav-btn.active{background:rgba(46,204,113,0.15);border-color:var(--gb);color:var(--gb);}
+.nav-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gm),var(--gb));display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;border:2px solid var(--gb);}
+.layout{display:grid;grid-template-columns:240px 1fr 280px;gap:18px;max-width:1250px;margin:0 auto;padding:76px 18px 20px;}
+.sidebar-left{position:sticky;top:76px;height:fit-content;}
+.glass-card{background:var(--glass);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;}
+.profile-cover-bg{height:70px;background:linear-gradient(135deg,var(--gm),var(--gb),var(--gold));}
+.profile-body{padding:0 16px 16px;position:relative;}
+.profile-avatar-wrap{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--gm),var(--gb));display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid var(--gd);margin-top:-27px;margin-bottom:8px;}
+.profile-name{font-weight:800;font-size:15px;}
+.profile-sub{font-size:11px;color:var(--gb);margin-top:3px;}
+.profile-bio{font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;line-height:1.4;}
+.profile-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.stat-box{background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.15);border-radius:10px;padding:8px;text-align:center;}
+.stat-num{font-size:20px;font-weight:800;color:var(--gb);}
+.stat-label{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;}
+.nav-menu{list-style:none;padding:10px;}
+.nav-menu li a{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;text-decoration:none;color:rgba(255,255,255,0.55);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;}
+.nav-menu li a:hover,.nav-menu li a.active{background:rgba(46,204,113,0.12);color:var(--gb);}
+.nav-menu .ico{font-size:16px;width:22px;}
+.stories-row{display:flex;gap:10px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.stories-row::-webkit-scrollbar{display:none;}
+.story-item{flex-shrink:0;text-align:center;cursor:pointer;}
+.story-ring{width:58px;height:58px;border-radius:50%;padding:2.5px;margin:0 auto 5px;background:linear-gradient(135deg,var(--gb),var(--gold));}
+.story-ring.add-ring{background:none;border:2px dashed rgba(46,204,113,0.4);padding:0;}
+.story-inner{width:100%;height:100%;border-radius:50%;background:var(--gm);display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid var(--gd);}
+.story-name{font-size:10px;color:rgba(255,255,255,0.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:58px;}
+.statut-card{background:linear-gradient(135deg,rgba(240,180,41,0.12),rgba(46,204,113,0.08));border:1px solid rgba(240,180,41,0.3);border-radius:16px;padding:14px 16px;margin-bottom:14px;}
+.statut-header{display:flex;align-items:flex-start;gap:10px;}
+.statut-ico{font-size:28px;flex-shrink:0;}
+.statut-info{flex:1;}
+.statut-title{font-size:13px;font-weight:700;color:var(--gold);}
+.statut-text{font-size:13px;color:rgba(255,255,255,0.75);margin-top:4px;line-height:1.5;}
+.statut-timer{font-size:11px;color:rgba(240,180,41,0.65);margin-top:5px;}
+.statut-bar{height:4px;background:rgba(255,255,255,0.08);border-radius:2px;margin-top:10px;}
+.statut-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold),var(--gb));transition:width 0.5s;}
+.statut-actions{display:flex;gap:8px;margin-top:10px;}
+.sact-btn{background:rgba(240,180,41,0.12);border:1px solid rgba(240,180,41,0.3);color:var(--gold);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer;}
+.sact-btn.red{background:rgba(231,76,60,0.12);border-color:rgba(231,76,60,0.3);color:#e74c3c;}
+.post-composer{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;}
+.composer-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;}
+.comp-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gm),var(--gb));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.comp-textarea{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(46,204,113,0.2);border-radius:14px;padding:12px 16px;font-size:14px;color:white;outline:none;resize:none;font-family:inherit;min-height:52px;transition:border-color 0.2s;}
+.comp-textarea:focus{border-color:var(--gb);background:rgba(46,204,113,0.05);}
+.comp-textarea::placeholder{color:rgba(255,255,255,0.28);}
+.composer-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.comp-tags input{background:rgba(255,255,255,0.05);border:1px solid rgba(46,204,113,0.2);border-radius:20px;padding:7px 14px;font-size:12px;color:white;outline:none;width:190px;}
+.comp-tags input::placeholder{color:rgba(255,255,255,0.28);}
+.comp-tags input:focus{border-color:var(--gb);}
+.comp-right{display:flex;gap:8px;}
+.btn-statut{background:rgba(240,180,41,0.12);border:1px solid rgba(240,180,41,0.35);color:var(--gold);border-radius:20px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-statut:hover{background:rgba(240,180,41,0.22);}
+.btn-post{background:linear-gradient(135deg,var(--gm),var(--gb));color:white;border:none;border-radius:20px;padding:8px 22px;font-size:13px;font-weight:700;cursor:pointer;transition:opacity 0.2s;}
+.btn-post:hover{opacity:0.85;}
+.filter-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.filter-tab{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;color:rgba(255,255,255,0.5);transition:all 0.2s;}
+.filter-tab:hover,.filter-tab.active{background:rgba(46,204,113,0.15);border-color:var(--gb);color:var(--gb);}
+.conseil-moment{background:linear-gradient(135deg,rgba(240,180,41,0.1),rgba(46,204,113,0.06));border:1px solid rgba(240,180,41,0.2);border-radius:16px;padding:14px 16px;margin-bottom:14px;}
+.cm-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(240,180,41,0.15);border:1px solid rgba(240,180,41,0.3);color:var(--gold);padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:8px;}
+.cm-title{font-size:14px;font-weight:700;color:var(--gold);margin-bottom:6px;}
+.cm-text{font-size:12px;color:rgba(255,255,255,0.7);line-height:1.6;}
+.cm-cultures{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.cm-tag{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.2);color:var(--gb);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;}
+.post-card{background:var(--glass);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;transition:border-color 0.2s,transform 0.2s;}
+.post-card:hover{border-color:rgba(46,204,113,0.35);transform:translateY(-2px);}
+.post-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 8px;}
+.post-author{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.post-author-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gm),var(--gb));display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid rgba(46,204,113,0.25);}
+.post-author-name{font-weight:700;font-size:14px;color:var(--gb);}
+.post-author-meta{font-size:11px;color:rgba(255,255,255,0.38);margin-top:2px;}
+.new-badge{background:linear-gradient(90deg,#e74c3c,#e67e22);color:white;font-size:9px;font-weight:800;padding:2px 8px;border-radius:10px;}
+.post-body{padding:0 16px 10px;font-size:14px;color:rgba(255,255,255,0.8);line-height:1.65;}
+.post-tags{padding:0 16px 10px;display:flex;flex-wrap:wrap;gap:6px;}
+.tag{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.22);color:var(--gb);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;cursor:pointer;}
+.tag:hover{background:rgba(46,204,113,0.2);}
+.post-actions{display:flex;border-top:1px solid rgba(255,255,255,0.06);}
+.action-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px;background:transparent;border:none;cursor:pointer;font-size:12px;font-weight:600;color:rgba(255,255,255,0.38);transition:all 0.2s;}
+.action-btn:hover{background:rgba(46,204,113,0.06);color:var(--gb);}
+.action-btn.liked{color:#e74c3c;}
+.comments-section{border-top:1px solid rgba(255,255,255,0.06);padding:12px 16px;display:none;}
+.comments-section.open{display:block;}
+.comment{display:flex;gap:8px;margin-bottom:10px;}
+.comment-av{width:30px;height:30px;border-radius:50%;background:var(--gm);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.comment-bubble{background:rgba(255,255,255,0.05);border-radius:12px;padding:8px 12px;flex:1;}
+.comment-author{font-weight:700;font-size:11px;color:var(--gb);}
+.comment-text{font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px;}
+.comment-input-row{display:flex;gap:8px;margin-top:8px;}
+.comment-input-row input{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(46,204,113,0.2);border-radius:20px;padding:8px 14px;font-size:12px;color:white;outline:none;}
+.comment-input-row input::placeholder{color:rgba(255,255,255,0.28);}
+.comment-input-row input:focus{border-color:var(--gb);}
+.btn-comment{background:var(--gm);color:white;border:none;border-radius:20px;padding:8px 16px;cursor:pointer;font-size:12px;font-weight:600;}
+.sidebar-right{position:sticky;top:76px;height:fit-content;}
+.r-card{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px;}
+.r-title{font-size:11px;font-weight:800;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+.meteo-widget{background:linear-gradient(160deg,#0a2e1a,#1a5c35);border:1px solid rgba(46,204,113,0.3);border-radius:16px;padding:16px;margin-bottom:12px;}
+.meteo-loc{font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:8px;}
+.meteo-main-row{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.meteo-temp{font-size:46px;font-weight:800;background:linear-gradient(135deg,var(--gb),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;}
+.meteo-emoji{font-size:38px;}
+.meteo-desc{font-size:12px;color:rgba(255,255,255,0.55);}
+.meteo-conseil-box{margin-top:10px;background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.15);border-radius:10px;padding:8px 10px;font-size:11px;color:rgba(255,255,255,0.65);line-height:1.5;}
+.meteo-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;}
+.m-info{background:rgba(255,255,255,0.05);border-radius:10px;padding:8px;text-align:center;}
+.m-val{font-size:14px;font-weight:700;color:var(--gb);}
+.m-lbl{font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px;}
+.forecast-strip{display:flex;gap:5px;margin-top:10px;}
+.fc-day{flex:1;background:rgba(255,255,255,0.04);border-radius:10px;padding:7px 3px;text-align:center;}
+.fc-label{font-size:9px;color:rgba(255,255,255,0.38);}
+.fc-ico{font-size:16px;margin:4px 0;}
+.fc-temp{font-size:11px;font-weight:700;color:var(--gold);}
+.top-post{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.top-post:last-child{border-bottom:none;}
+.top-post-h{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.top-post-text{font-size:12px;color:rgba(255,255,255,0.5);}
+.top-post-likes{font-size:11px;color:#e74c3c;font-weight:700;margin-top:3px;}
+.r-user{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;}
+.r-user:last-child{border-bottom:none;}
+.r-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gm),var(--gb));display:flex;align-items:center;justify-content:center;font-size:18px;}
+.r-name{font-weight:600;font-size:13px;color:rgba(255,255,255,0.8);flex:1;}
+.r-meta{font-size:11px;color:rgba(255,255,255,0.35);}
+.follow-btn{background:transparent;border:1px solid rgba(46,204,113,0.4);color:var(--gb);border-radius:14px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.follow-btn:hover,.follow-btn.following{background:var(--gb);color:var(--gd);}
+.comm-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;}
+.comm-item:last-child{border-bottom:none;}
+.comm-emoji-box{font-size:22px;width:40px;height:40px;background:rgba(46,204,113,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.join-btn{margin-left:auto;background:transparent;border:1px solid rgba(46,204,113,0.4);color:var(--gb);border-radius:14px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.join-btn.joined{background:var(--gb);color:var(--gd);}
+.view{display:none;}
+.view.active{display:block;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.modal-overlay.open{display:flex;}
+.modal{background:#0f3d22;border:1px solid rgba(46,204,113,0.3);border-radius:20px;padding:28px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.modal-title{font-size:20px;font-weight:800;color:var(--gb);margin-bottom:20px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:11px;font-weight:700;color:rgba(255,255,255,0.45);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
+.form-group input,.form-group textarea{width:100%;padding:10px 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(46,204,113,0.2);border-radius:10px;font-size:14px;color:white;outline:none;font-family:inherit;resize:vertical;}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--gb);}
+.form-group input::placeholder,.form-group textarea::placeholder{color:rgba(255,255,255,0.28);}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+.btn-cancel{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);border-radius:10px;padding:10px 20px;cursor:pointer;font-weight:600;}
+.btn-save{background:linear-gradient(135deg,var(--gm),var(--gb));color:white;border:none;border-radius:10px;padding:10px 24px;cursor:pointer;font-weight:700;}
+.pm-cover{height:90px;border-radius:12px;margin-bottom:-35px;}
+.pm-avatar{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--gm),var(--gb));display:flex;align-items:center;justify-content:center;font-size:36px;border:4px solid #0f3d22;margin-left:20px;position:relative;z-index:1;}
+.pm-stats{display:flex;gap:24px;margin-top:10px;}
+.pm-stat span:first-child{font-size:20px;font-weight:800;color:var(--gb);}
+.pm-stat span:last-child{font-size:11px;color:rgba(255,255,255,0.38);}
+.meteo-region-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px;}
+.meteo-region-card{background:linear-gradient(160deg,#0a2e1a,#1a5c35);border:1px solid rgba(46,204,113,0.22);border-radius:14px;padding:14px;}
+.conseil-saison{background:var(--glass);border:1px solid rgba(240,180,41,0.18);border-left:4px solid var(--gold);border-radius:14px;padding:16px;}
+.conseil-badge-s{display:inline-block;background:rgba(240,180,41,0.12);color:var(--gold);border:1px solid rgba(240,180,41,0.25);padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:10px;}
+.conseil-list{list-style:none;margin-top:10px;}
+.conseil-list li{display:flex;gap:8px;padding:5px 0;font-size:12px;color:rgba(255,255,255,0.65);border-bottom:1px solid rgba(255,255,255,0.05);}
+.conseil-list li:last-child{border-bottom:none;}
+.cult-tag{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.18);color:var(--gb);padding:3px 9px;border-radius:10px;font-size:11px;font-weight:600;}
+/* PULSE ANIMATION STORY */
+@keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(46,204,113,0.5);}70%{box-shadow:0 0 0 8px rgba(46,204,113,0);}100%{box-shadow:0 0 0 0 rgba(46,204,113,0);}}
+.story-ring.has-statut{animation:pulse-ring 2s infinite;}
+@media(max-width:1100px){.sidebar-right{display:none;}.layout{grid-template-columns:220px 1fr;}}
+@media(max-width:700px){.sidebar-left{display:none;}.layout{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-logo">
+    <div class="nav-logo-box">🌾</div>
+    <div class="nav-logo-text">AgroConnect</div>
+  </div>
+  <div class="nav-search"><input type="text" placeholder="🔍 Rechercher..." id="search-input"></div>
+  <div class="nav-right">
+    <button class="nav-btn active" onclick="showView('feed')">🏠 Accueil</button>
+    <button class="nav-btn" onclick="showView('meteo')">⛅ Météo</button>
+    <button class="nav-btn" onclick="showView('communautes')">👥 Communautés</button>
+    <button class="nav-btn" onclick="showView('agriculteurs')">🌱 Agriculteurs</button>
+    <button class="nav-btn" onclick="window.location='/marche'" style="border-color:rgba(240,180,41,0.4);color:var(--gold);">🛒 Marché</button>
+    {% if is_admin %}<button class="nav-btn" onclick="window.location='/admin'" style="border-color:rgba(220,38,38,0.4);color:#fca5a5;">👨‍💼 Admin</button>{% endif %}
+    <div class="nav-avatar" id="nav-avatar" onclick="showMyProfile()">🌾</div>
+    <button class="nav-btn" onclick="window.location='/logout'" style="border-color:rgba(231,76,60,0.4);color:rgba(231,76,60,0.7);">🚪</button>
+  </div>
+</nav>
+
+<div class="layout">
+  <aside class="sidebar-left">
+    <div class="glass-card">
+      <div class="profile-cover-bg" id="my-cover"></div>
+      <div class="profile-body">
+        <div class="profile-avatar-wrap" id="my-avatar">🌾</div>
+        <div class="profile-name" id="my-name">Chargement...</div>
+        <div class="profile-sub" id="my-sub"></div>
+        <div class="profile-bio" id="my-bio"></div>
+        <div class="profile-stats">
+          <div class="stat-box"><div class="stat-num" id="my-followers">0</div><div class="stat-label">Abonnés</div></div>
+          <div class="stat-box"><div class="stat-num" id="my-following">0</div><div class="stat-label">Suivis</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="glass-card">
+      <ul class="nav-menu">
+        <li><a onclick="showView('feed')" class="active"><span class="ico">🏠</span> Fil d'actualité</a></li>
+        <li><a onclick="showView('meteo')"><span class="ico">⛅</span> Météo agricole</a></li>
+        <li><a onclick="showView('communautes')"><span class="ico">👥</span> Communautés</a></li>
+        <li><a onclick="showView('agriculteurs')"><span class="ico">🌱</span> Agriculteurs</a></li>
+        <li><a href="/marche"><span class="ico">🛒</span> Marché en ligne</a></li>
+        <li><a onclick="openCreateComm()"><span class="ico">➕</span> Créer communauté</a></li>
+        {% if is_admin %}<li><a href="/admin" style="color:#fca5a5;"><span class="ico">👨‍💼</span> Panel Admin</a></li>{% endif %}
+        <li><a onclick="window.location='/logout'" style="color:rgba(231,76,60,0.65)"><span class="ico">🚪</span> Déconnexion</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main>
+    <div class="view active" id="view-feed">
+      <div class="stories-row" id="stories-row">
+        <div class="story-item" onclick="openStatut()">
+          <div class="story-ring add-ring"><div class="story-inner" style="background:rgba(46,204,113,0.08);">➕</div></div>
+          <div class="story-name">Mon statut</div>
+        </div>
+      </div>
+      <div id="statut-actif"></div>
+      <div class="post-composer">
+        <div class="composer-top">
+          <div class="comp-avatar" id="comp-avatar">🌾</div>
+          <textarea class="comp-textarea" id="new-post-content" rows="2" placeholder="Quoi de neuf dans vos champs aujourd'hui ?"></textarea>
+        </div>
+        <div class="composer-footer">
+          <div class="comp-tags"><input type="text" id="new-post-tags" placeholder="🏷️ tags: irrigation, récolte..."></div>
+          <div class="comp-right">
+            <button class="btn-statut" onclick="openStatut()">⏱️ Statut 24h</button>
+            <button class="btn-post" onclick="publier()">Publier 🌱</button>
+          </div>
+        </div>
+      </div>
+      <div id="conseil-moment"></div>
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="filterTag(null,this)">Tous</button>
+        <button class="filter-tab" onclick="filterTag('irrigation',this)">💧 Irrigation</button>
+        <button class="filter-tab" onclick="filterTag('élevage',this)">🐄 Élevage</button>
+        <button class="filter-tab" onclick="filterTag('marché',this)">🛒 Marché</button>
+        <button class="filter-tab" onclick="filterTag('météo',this)">⛅ Météo</button>
+        <button class="filter-tab" onclick="filterTag('exportation',this)">🌍 Export</button>
+      </div>
+      <div id="feed-container"><div style="text-align:center;padding:40px;color:rgba(255,255,255,0.3);">Chargement...</div></div>
+    </div>
+
+    <div class="view" id="view-meteo">
+      <div class="glass-card" style="padding:16px 20px;margin-bottom:16px;">
+        <h2 style="color:var(--gb);font-size:20px;">⛅ Météo agricole — Sénégal</h2>
+        <p style="color:rgba(255,255,255,0.4);font-size:13px;margin-top:5px;">Conditions météo et conseils adaptés à chaque région</p>
+      </div>
+      <div class="meteo-region-grid" id="meteo-regions"></div>
+      <div class="glass-card" style="padding:20px;">
+        <h3 style="color:var(--gold);margin-bottom:16px;font-size:18px;">📅 Calendrier agricole sénégalais</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;" id="conseils-container"></div>
+      </div>
+    </div>
+
+    <div class="view" id="view-communautes">
+      <div class="glass-card" style="padding:14px 18px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
+        <h2 style="color:var(--gb);">👥 Communautés agricoles</h2>
+        <button class="btn-post" onclick="openCreateComm()">+ Créer</button>
+      </div>
+      <div id="communautes-container"></div>
+    </div>
+
+    <div class="view" id="view-agriculteurs">
+      <div class="glass-card" style="padding:14px 18px;margin-bottom:14px;">
+        <h2 style="color:var(--gb);">🌱 Agriculteurs sénégalais</h2>
+      </div>
+      <div id="agriculteurs-container"></div>
+    </div>
+  </main>
+
+  <aside class="sidebar-right">
+    <div id="meteo-widget"></div>
+    <div class="r-card"><div class="r-title">🏆 Top Publications</div><div id="top3-container"></div></div>
+    <div class="r-card"><div class="r-title">👥 Communautés</div><div id="right-comms"></div></div>
+    <div class="r-card"><div class="r-title">🌱 Suggestions</div><div id="right-users"></div></div>
+  </aside>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-profil">
+  <div class="modal" style="padding:0;overflow:hidden;">
+    <div class="pm-cover" id="pm-cover" style="background:linear-gradient(135deg,#1a5c35,#2ecc71);"></div>
+    <div style="display:flex;align-items:flex-end;">
+      <div class="pm-avatar" id="pm-avatar">?</div>
+      <div style="flex:1;padding:8px 16px;">
+        <div style="font-size:17px;font-weight:800;color:var(--gb);" id="pm-name"></div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);" id="pm-sub"></div>
+      </div>
+      <button class="follow-btn" id="pm-follow-btn" style="margin:0 16px 14px;padding:8px 20px;font-size:13px;" onclick="toggleFollowModal()">S'abonner</button>
+    </div>
+    <div style="padding:12px 20px;">
+      <div class="pm-stats">
+        <div class="pm-stat"><span id="pm-followers">0</span><br><span>Abonnés</span></div>
+        <div class="pm-stat"><span id="pm-following">0</span><br><span>Suivis</span></div>
+      </div>
+      <p style="margin-top:10px;font-size:13px;color:rgba(255,255,255,0.5);" id="pm-bio"></p>
+    </div>
+    <div style="padding:0 20px 16px;"><div class="r-title">Publications récentes</div><div id="pm-posts"></div></div>
+    <div style="padding:0 20px 20px;display:flex;justify-content:flex-end;"><button class="btn-cancel" onclick="closeModal('modal-profil')">Fermer</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-statut">
+  <div class="modal">
+    <div class="modal-title">⏱️ Publier un statut 24h</div>
+    <p style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:20px;">Votre statut sera visible pendant 24h puis disparaîtra automatiquement.</p>
+    <div class="form-group"><label>Votre message</label><textarea id="statut-content" rows="3" placeholder="Partagez une info, une alerte, une bonne nouvelle..."></textarea></div>
+    <div class="form-group"><label>Emoji</label><input type="text" id="statut-emoji" placeholder="⚡" maxlength="2"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-statut')">Annuler</button>
+      <button class="btn-save" onclick="publierStatut()">Publier ⚡</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-comm">
+  <div class="modal">
+    <div class="modal-title">🌱 Créer une communauté</div>
+    <div class="form-group"><label>Nom</label><input type="text" id="comm-nom" placeholder="Ex: Riziculteurs du Delta"></div>
+    <div class="form-group"><label>Description</label><textarea id="comm-desc" rows="3" placeholder="Décrivez votre communauté..."></textarea></div>
+    <div class="form-group"><label>Emoji</label><input type="text" id="comm-emoji" placeholder="🌾" maxlength="2"></div>
+    <div class="form-group"><label>Tags (séparés par virgules)</label><input type="text" id="comm-tags" placeholder="riz, eau, delta..."></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-comm')">Annuler</button>
+      <button class="btn-save" onclick="creerCommunaute()">Créer 🚀</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentUser=null,currentProfileId=null,currentTag=null;
+
+const METEO={
+  "Dakar":{temp:34,icon:"☀️",desc:"Ensoleillé",humidite:72,vent:18,pluie:0,conseil:"Arrosez tôt le matin pour limiter l'évaporation. Bon pour l'irrigation."},
+  "Thiès":{temp:32,icon:"⛅",desc:"Partiellement nuageux",humidite:65,vent:14,pluie:2,conseil:"Conditions favorables pour le maraîchage. Vérifiez l'humidité du sol."},
+  "Saint-Louis":{temp:38,icon:"🌤️",desc:"Chaud et sec",humidite:45,vent:22,pluie:0,conseil:"Doublez les apports en eau. Protégez les jeunes plants de la chaleur."},
+  "Ziguinchor":{temp:30,icon:"🌧️",desc:"Pluies légères",humidite:88,vent:10,pluie:15,conseil:"Pluies prévues. Vérifiez le drainage pour éviter l'engorgement."},
+  "Kaolack":{temp:36,icon:"☀️",desc:"Très chaud",humidite:55,vent:12,pluie:0,conseil:"Surveillez le stress hydrique de vos cultures d'arachide."},
+  "Diourbel":{temp:35,icon:"🌤️",desc:"Légèrement nuageux",humidite:50,vent:16,pluie:0,conseil:"Période propice pour la préparation des sols. Amendez avant les pluies."},
+  "Tambacounda":{temp:40,icon:"🔆",desc:"Chaleur intense",humidite:40,vent:8,pluie:0,conseil:"Alerte chaleur ! Abreuvement renforcé pour le bétail. Évitez les heures chaudes."},
+  "Kolda":{temp:31,icon:"⛈️",desc:"Orages possibles",humidite:85,vent:20,pluie:25,conseil:"Orages attendus. Rentrez le matériel et sécurisez vos hangars."},
+  "Fatick":{temp:33,icon:"☀️",desc:"Ensoleillé",humidite:60,vent:15,pluie:0,conseil:"Bon ensoleillement. Idéal pour le séchage des récoltes."},
+  "Kaffrine":{temp:37,icon:"🌤️",desc:"Sec et chaud",humidite:48,vent:11,pluie:0,conseil:"Sol sec. Programmez une irrigation de complément avant midi."}
+};
+const PREVISION=[{j:"Lun",i:"☀️",t:34},{j:"Mar",i:"⛅",t:32},{j:"Mer",i:"🌧️",t:28},{j:"Jeu",i:"⛅",t:31},{j:"Ven",i:"☀️",t:35}];
+const SAISONS=[
+  {saison:"🌧️ Hivernage",periode:"Juillet — Septembre",couleur:"#378ADD",icone:"🌧️",description:"Saison des pluies. Période intense pour les cultures pluviales.",conseils:["🌱 Semez mil, sorgho et niébé dès les premières pluies","💧 Surveillez le drainage pour éviter l'engorgement","🐛 Traitez précocement contre les insectes ravageurs","🌿 Préparez le compost avec les résidus de culture","📦 Stockez des semences en lieu sec avant la saison"],cultures:["Mil","Sorgho","Niébé","Riz","Coton","Maïs"]},
+  {saison:"🍂 Post-hivernage",periode:"Octobre — Novembre",couleur:"#8b5e3c",icone:"🍂",description:"Récolte et préparation des sols pour la saison sèche.",conseils:["🌾 Récoltez avant les risques d'humidité résiduelle","🐄 Valorisez les résidus pour l'alimentation du bétail","🌱 Semez les cultures de contre-saison irriguées","🧪 Analysez vos sols pour planifier la fertilisation","💰 Vendez progressivement pour optimiser les prix"],cultures:["Arachide","Tomate","Oignon","Patate douce"]},
+  {saison:"🌵 Saison sèche froide",periode:"Décembre — Février",couleur:"#2ecc71",icone:"🌵",description:"Propice à la culture irriguée maraîchère et à l'élevage.",conseils:["🥦 Cultivez oignon, chou, carotte, aubergine","💧 Gérez rigoureusement l'eau d'irrigation","🐑 Bonne période pour l'embouche ovine","🌳 Plantez les arbres fruitiers en profitant de la fraîcheur","🔧 Entretenez vos équipements agricoles"],cultures:["Oignon","Chou","Carotte","Tomate","Piment"]},
+  {saison:"🔥 Saison sèche chaude",periode:"Mars — Juin",couleur:"#f0b429",icone:"🔥",description:"Chaleur intense. Gestion de l'eau et préparation cruciale.",conseils:["🌊 Renforcez les stocks d'eau pour l'irrigation","🐄 Assurez l'abreuvement régulier des animaux","🌾 Préparez et amendez vos champs avant les pluies","🌱 Sélectionnez et conservez vos semences de qualité","📚 Participez aux formations agricoles disponibles"],cultures:["Pastèque","Melon","Sésame","Sorgho"]}
+];
+
+function getSaison(){const m=new Date().getMonth()+1;if(m>=7&&m<=9)return SAISONS[0];if(m>=10&&m<=11)return SAISONS[1];if(m>=12||m<=2)return SAISONS[2];return SAISONS[3];}
+
+async function init(){
+  try{
+    console.log("🔄 Initializing home page...");
+    const r = await fetch('/api/me');
+    console.log("📌 /api/me response status:", r.status);
+    if(!r.ok) throw new Error('Status ' + r.status);
+    const me = await r.json();
+    console.log("✅ Got user:", me.pseudo);
+    currentUser=me;
+    document.getElementById('nav-avatar').textContent=me.avatar;
+    document.getElementById('comp-avatar').textContent=me.avatar;
+    document.getElementById('my-avatar').textContent=me.avatar;
+    document.getElementById('my-name').textContent=me.nom;
+    document.getElementById('my-sub').textContent='📍 '+me.region+' · '+me.type_culture;
+    document.getElementById('my-bio').textContent=me.bio||'';
+    document.getElementById('my-followers').textContent=me.nb_followers;
+    document.getElementById('my-following').textContent=me.nb_following;
+    await loadFeed();
+    loadTop3();
+    loadMeteoWidget();
+    loadRightUsers();
+    loadRightComms();
+    loadStories();
+    loadStatutActif();
+    loadConseilMoment();
+  }catch(e){
+    console.error("❌ Init error:", e);
+    window.location='/login';
+  }
+}
+
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nav-menu li a').forEach(a=>a.classList.remove('active'));
+  if(name==='feed')loadFeed();
+  if(name==='meteo')loadVueMeteo();
+  if(name==='communautes')loadCommunautes();
+  if(name==='agriculteurs')loadAgriculteurs();
+}
+
+async function loadFeed(tag,userId){
+  document.getElementById('feed-container').innerHTML='<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.3);">Chargement...</div>';
+  let url='/api/feed';let p=[];
+  if(tag)p.push('tag='+encodeURIComponent(tag));
+  if(userId)p.push('user_id='+userId);
+  if(p.length)url+='?'+p.join('&');
+  const pubs=await fetch(url).then(r=>r.json());
+  const c=document.getElementById('feed-container');
+  if(!pubs.length){c.innerHTML='<div class="glass-card" style="padding:40px;text-align:center;color:rgba(255,255,255,0.35);">Aucune publication</div>';return;}
+  c.innerHTML=pubs.map(renderPost).join('');
+}
+
+function renderPost(p){
+  const tags=(p.tags||[]).map(t=>`<span class="tag" onclick="filterTag('${t}',null)">🏷️ ${t}</span>`).join('');
+  const comments=(p.commentaires||[]).map(c=>`<div class="comment"><div class="comment-av">${c.auteur_avatar||'👤'}</div><div class="comment-bubble"><div class="comment-author">@${c.auteur_pseudo}</div><div class="comment-text">${c.texte}</div></div></div>`).join('');
+  return `<div class="post-card" id="post-${p._id}">
+    <div class="post-header">
+      <div class="post-author" onclick="showProfil('${p.auteur_id}')">
+        <div class="post-author-avatar">${p.auteur_avatar||'👤'}</div>
+        <div><div class="post-author-name">@${p.auteur_pseudo}</div><div class="post-author-meta">${p.date}</div></div>
+      </div>
+    </div>
+    <div class="post-body">${p.contenu}</div>
+    ${tags?`<div class="post-tags">${tags}</div>`:''}
+    <div class="post-actions">
+      <button class="action-btn ${p.liked_by_me?'liked':''}" id="like-btn-${p._id}" onclick="toggleLike('${p._id}')">
+        <span id="like-ico-${p._id}">${p.liked_by_me?'❤️':'🤍'}</span> <span id="like-count-${p._id}">${p.nb_likes}</span> J'aime
+      </button>
+      <button class="action-btn" onclick="toggleComments('${p._id}')">💬 ${(p.commentaires||[]).length} Commentaires</button>
+      <button class="action-btn">🔁 Partager</button>
+    </div>
+    <div class="comments-section" id="comments-${p._id}">
+      <div id="comments-list-${p._id}">${comments}</div>
+      <div class="comment-input-row">
+        <input type="text" id="comment-input-${p._id}" placeholder="Écrire un commentaire..." onkeydown="if(event.key==='Enter')commenter('${p._id}')">
+        <button class="btn-comment" onclick="commenter('${p._id}')">Envoyer</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function filterTag(tag,btn){
+  currentTag=tag;
+  document.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  loadFeed(tag);
+}
+
+async function publier(){
+  const contenu=document.getElementById('new-post-content').value.trim();
+  if(!contenu)return;
+  const tags=document.getElementById('new-post-tags').value;
+  await fetch('/api/publier',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contenu,tags})});
+  document.getElementById('new-post-content').value='';
+  document.getElementById('new-post-tags').value='';
+  loadFeed(currentTag);loadTop3();
+}
+
+async function toggleLike(id){
+  const r=await fetch('/api/like/'+id,{method:'POST'}).then(r=>r.json());
+  const btn=document.getElementById('like-btn-'+id);
+  document.getElementById('like-ico-'+id).textContent=r.liked?'❤️':'🤍';
+  document.getElementById('like-count-'+id).textContent=r.nb_likes;
+  if(r.liked)btn.classList.add('liked');else btn.classList.remove('liked');
+}
+
+function toggleComments(id){document.getElementById('comments-'+id).classList.toggle('open');}
+
+async function commenter(id){
+  const inp=document.getElementById('comment-input-'+id);
+  const texte=inp.value.trim();if(!texte)return;
+  const r=await fetch('/api/commenter/'+id,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({texte})}).then(r=>r.json());
+  document.getElementById('comments-list-'+id).innerHTML+=`<div class="comment"><div class="comment-av">${r.avatar}</div><div class="comment-bubble"><div class="comment-author">@${r.pseudo}</div><div class="comment-text">${r.texte}</div></div></div>`;
+  inp.value='';
+}
+
+async function loadStories(){
+  const users=await fetch('/api/utilisateurs').then(r=>r.json());
+  const row=document.getElementById('stories-row');
+  const first=row.children[0].outerHTML;
+  const hasStatut=!!localStorage.getItem('statut_actif');
+  row.innerHTML=(hasStatut?`<div class="story-item" onclick="openStatut()"><div class="story-ring has-statut"><div class="story-inner">${currentUser?.avatar||'🌾'}</div></div><div class="story-name">Mon statut</div></div>`:first)+
+    users.filter(u=>u._id!==currentUser?._id).slice(0,7).map(u=>`
+    <div class="story-item" onclick="showProfil('${u._id}')">
+      <div class="story-ring"><div class="story-inner">${u.avatar}</div></div>
+      <div class="story-name">@${u.pseudo}</div>
+    </div>`).join('');
+}
+
+function loadConseilMoment(){
+  const c=getSaison();
+  const region=currentUser?.region||'Dakar';
+  document.getElementById('conseil-moment').innerHTML=`
+    <div class="conseil-moment">
+      <div class="cm-badge">${c.icone} ${c.saison} · ${c.periode}</div>
+      <div class="cm-title">💡 Conseil du moment — ${region}</div>
+      <div class="cm-text">${c.conseils[0]}<br><span style="color:rgba(255,255,255,0.45);font-size:11px;margin-top:4px;display:block;">${c.conseils[1]}</span></div>
+      <div class="cm-cultures">${c.cultures.slice(0,5).map(x=>`<span class="cm-tag">🌱 ${x}</span>`).join('')}</div>
+    </div>`;
+}
+
+function loadStatutActif(){
+  const s=localStorage.getItem('statut_actif');
+  const el=document.getElementById('statut-actif');
+  if(!s){el.innerHTML='';return;}
+  const statut=JSON.parse(s);
+  const expiry=statut.timestamp+24*60*60*1000;
+  if(Date.now()>expiry){localStorage.removeItem('statut_actif');el.innerHTML='';return;}
+  function render(){
+    const now=Date.now();
+    if(now>expiry){localStorage.removeItem('statut_actif');el.innerHTML='';return;}
+    const h=Math.floor((expiry-now)/3600000);
+    const mn=Math.floor(((expiry-now)%3600000)/60000);
+    const pct=Math.round(((expiry-now)/(24*60*60*1000))*100);
+    el.innerHTML=`<div class="statut-card">
+      <div class="statut-header">
+        <div class="statut-ico">${statut.emoji||'⚡'}</div>
+        <div class="statut-info">
+          <div class="statut-title">⚡ Votre statut du jour</div>
+          <div class="statut-text">${statut.texte}</div>
+          <div class="statut-timer">⏳ Expire dans ${h}h ${mn}min</div>
+        </div>
+        <button onclick="supprimerStatut()" class="sact-btn red">✕ Supprimer</button>
+      </div>
+      <div class="statut-bar"><div class="statut-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }
+  render();
+  setInterval(render,60000);
+}
+
+function openStatut(){openModal('modal-statut');}
+
+function publierStatut(){
+  const texte=document.getElementById('statut-content').value.trim();
+  if(!texte)return;
+  const emoji=document.getElementById('statut-emoji').value||'⚡';
+  localStorage.setItem('statut_actif',JSON.stringify({texte,emoji,timestamp:Date.now()}));
+  closeModal('modal-statut');
+  document.getElementById('statut-content').value='';
+  document.getElementById('statut-emoji').value='';
+  loadStatutActif();
+  loadStories();
+}
+
+function supprimerStatut(){
+  localStorage.removeItem('statut_actif');
+  document.getElementById('statut-actif').innerHTML='';
+  loadStories();
+}
+
+function loadMeteoWidget(){
+  const region=currentUser?.region||'Dakar';
+  const m=METEO[region]||METEO['Dakar'];
+  document.getElementById('meteo-widget').innerHTML=`
+    <div class="meteo-widget">
+      <div class="meteo-loc">📍 ${region}, Sénégal</div>
+      <div class="meteo-main-row"><div class="meteo-temp">${m.temp}°</div><div class="meteo-emoji">${m.icon}</div></div>
+      <div class="meteo-desc">${m.desc}</div>
+      <div class="meteo-conseil-box">💡 ${m.conseil}</div>
+      <div class="meteo-grid">
+        <div class="m-info"><div class="m-val">${m.humidite}%</div><div class="m-lbl">Humidité</div></div>
+        <div class="m-info"><div class="m-val">${m.vent} km/h</div><div class="m-lbl">Vent</div></div>
+        <div class="m-info"><div class="m-val">${m.pluie} mm</div><div class="m-lbl">Pluies</div></div>
+        <div class="m-info"><div class="m-val" style="color:${m.temp>37?'#e74c3c':'#2ecc71'}">${m.temp>37?'🔴 Alerte':'🟢 OK'}</div><div class="m-lbl">État</div></div>
+      </div>
+      <div class="forecast-strip">${PREVISION.map(p=>`<div class="fc-day"><div class="fc-label">${p.j}</div><div class="fc-ico">${p.i}</div><div class="fc-temp">${p.t}°</div></div>`).join('')}</div>
+    </div>`;
+}
+
+function loadVueMeteo(){
+  document.getElementById('meteo-regions').innerHTML=Object.entries(METEO).map(([r,m])=>`
+    <div class="meteo-region-card">
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;">📍 ${r}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <span style="font-size:28px;font-weight:800;background:linear-gradient(135deg,#2ecc71,#f0b429);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">${m.temp}°</span>
+        <span style="font-size:24px;">${m.icon}</span>
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.55);margin-bottom:8px;">${m.desc}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px;">
+        <div class="m-info"><div class="m-val" style="font-size:12px;">${m.humidite}%</div><div class="m-lbl">Humidité</div></div>
+        <div class="m-info"><div class="m-val" style="font-size:12px;">${m.vent}km/h</div><div class="m-lbl">Vent</div></div>
+      </div>
+      ${m.pluie>0?`<div style="background:rgba(55,138,221,0.12);border:1px solid rgba(55,138,221,0.25);border-radius:8px;padding:5px 8px;font-size:11px;color:#85b7eb;margin-bottom:6px;">🌧️ ${m.pluie}mm prévus</div>`:''}
+      <div style="font-size:11px;color:rgba(255,255,255,0.45);line-height:1.4;">${m.conseil}</div>
+    </div>`).join('');
+  document.getElementById('conseils-container').innerHTML=SAISONS.map(c=>`
+    <div class="conseil-saison" style="border-left-color:${c.couleur};">
+      <div class="conseil-badge-s">${c.saison} · ${c.periode}</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:8px;">${c.description}</div>
+      <ul class="conseil-list">${c.conseils.map(t=>`<li><span>•</span><span>${t}</span></li>`).join('')}</ul>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;">${c.cultures.map(x=>`<span class="cult-tag">🌱 ${x}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+async function loadTop3(){
+  const top=await fetch('/api/top3').then(r=>r.json());
+  document.getElementById('top3-container').innerHTML=top.map((p,i)=>`
+    <div class="top-post">
+      <div class="top-post-h"><span>${['🥇','🥈','🥉'][i]}</span><span style="font-size:15px;">${p.auteur_avatar}</span><span style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.75);">@${p.auteur_pseudo}</span></div>
+      <div class="top-post-text">${p.contenu}</div>
+      <div class="top-post-likes">❤️ ${p.nb_likes} j'aime</div>
+    </div>`).join('');
+}
+
+async function showProfil(userId){
+  currentProfileId=userId;
+  const u=await fetch('/api/profil/'+userId).then(r=>r.json());
+  document.getElementById('pm-cover').style.background=u.cover_color||'linear-gradient(135deg,#1a5c35,#2ecc71)';
+  document.getElementById('pm-avatar').textContent=u.avatar;
+  document.getElementById('pm-name').textContent=u.nom+' ('+u.pseudo+')';
+  document.getElementById('pm-sub').textContent='📍 '+u.region+' · '+u.type_culture;
+  document.getElementById('pm-followers').textContent=u.nb_followers;
+  document.getElementById('pm-following').textContent=u.nb_following;
+  document.getElementById('pm-bio').textContent=u.bio||'';
+  const fb=document.getElementById('pm-follow-btn');
+  if(u._id===currentUser._id){fb.style.display='none';}
+  else{fb.style.display='block';fb.textContent=u.is_following?'Se désabonner':"S'abonner";fb.className='follow-btn'+(u.is_following?' following':'');}
+  const pubs=await fetch('/api/feed?user_id='+userId).then(r=>r.json());
+  document.getElementById('pm-posts').innerHTML=pubs.slice(0,3).map(p=>`
+    <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+      <div style="font-size:13px;color:rgba(255,255,255,0.7);">${p.contenu}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px;">❤️ ${p.nb_likes} · ${p.date}</div>
+    </div>`).join('')||'<p style="color:rgba(255,255,255,0.3);font-size:13px;">Aucune publication</p>';
+  openModal('modal-profil');
+}
+function showMyProfile(){if(currentUser)showProfil(currentUser._id);}
+
+async function toggleFollowModal(){
+  const r=await fetch('/api/abonner/'+currentProfileId,{method:'POST'}).then(r=>r.json());
+  const btn=document.getElementById('pm-follow-btn');
+  btn.textContent=r.following?'Se désabonner':"S'abonner";
+  btn.className='follow-btn'+(r.following?' following':'');
+  document.getElementById('pm-followers').textContent=r.nb_followers;
+  document.getElementById('my-following').textContent=parseInt(document.getElementById('my-following').textContent)+(r.following?1:-1);
+  loadRightUsers();
+}
+
+async function loadAgriculteurs(){
+  const users=await fetch('/api/utilisateurs').then(r=>r.json());
+  document.getElementById('agriculteurs-container').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
+    ${users.map(u=>`
+      <div class="glass-card" style="padding:16px;cursor:pointer;" onclick="showProfil('${u._id}')">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#1a5c35,#2ecc71);display:flex;align-items:center;justify-content:center;font-size:26px;border:2px solid rgba(46,204,113,0.3);">${u.avatar}</div>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:14px;">${u.nom}</div>
+            <div style="font-size:11px;color:rgba(46,204,113,0.8);">@${u.pseudo}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.38);">📍 ${u.region} · 🌱 ${u.type_culture}</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.45);line-height:1.4;">${u.bio||''}</div>
+        <div style="display:flex;gap:16px;margin-top:10px;font-size:11px;color:rgba(255,255,255,0.35);">
+          <span>👥 ${u.nb_followers} abonnés</span><span>🌾 ${u.nb_following} suivis</span>
+        </div>
+      </div>`).join('')}
+    </div>`;
+}
+
+async function loadCommunautes(){
+  const comms=await fetch('/api/communautes').then(r=>r.json());
+  document.getElementById('communautes-container').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;">
+    ${comms.map(c=>`
+      <div class="glass-card" style="padding:18px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <div style="width:52px;height:52px;background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.2);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;">${c.emoji}</div>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:15px;color:var(--gb);">${c.nom}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.38);">👥 ${c.nb_membres} membres</div>
+          </div>
+        </div>
+        <p style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:12px;line-height:1.5;">${c.description}</p>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;">${(c.tags||[]).map(t=>`<span class="tag">🏷️ ${t}</span>`).join('')}</div>
+        <button class="join-btn ${c.is_member?'joined':''}" id="join-btn-${c._id}" onclick="rejoindre('${c._id}',this)" style="width:100%;padding:10px;font-size:13px;border-radius:10px;">
+          ${c.is_member?'✅ Membre':'➕ Rejoindre la communauté'}
+        </button>
+      </div>`).join('')}
+    </div>`;
+}
+
+async function rejoindre(id,btn){
+  const r=await fetch('/api/rejoindre/'+id,{method:'POST'}).then(r=>r.json());
+  btn.textContent=r.joined?'✅ Membre':'➕ Rejoindre la communauté';
+  btn.className='join-btn'+(r.joined?' joined':'');
+  loadRightComms();
+}
+
+async function creerCommunaute(){
+  const nom=document.getElementById('comm-nom').value.trim();if(!nom)return;
+  const data={nom,description:document.getElementById('comm-desc').value,emoji:document.getElementById('comm-emoji').value||'🌱',tags:document.getElementById('comm-tags').value};
+  await fetch('/api/creer_communaute',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  closeModal('modal-comm');loadCommunautes();loadRightComms();
+}
+
+async function loadRightUsers(){
+  const users=await fetch('/api/utilisateurs').then(r=>r.json());
+  document.getElementById('right-users').innerHTML=users.filter(u=>u._id!==currentUser?._id).slice(0,5).map(u=>`
+    <div class="r-user" onclick="showProfil('${u._id}')">
+      <div class="r-av">${u.avatar}</div>
+      <div style="flex:1;"><div class="r-name">@${u.pseudo}</div><div class="r-meta">${u.region}</div></div>
+    </div>`).join('');
+}
+
+async function loadRightComms(){
+  const comms=await fetch('/api/communautes').then(r=>r.json());
+  document.getElementById('right-comms').innerHTML=comms.slice(0,3).map(c=>`
+    <div class="comm-item">
+      <div class="comm-emoji-box">${c.emoji}</div>
+      <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.75);">${c.nom}</div><div style="font-size:10px;color:rgba(255,255,255,0.3);">👥 ${c.nb_membres}</div></div>
+      <button class="join-btn ${c.is_member?'joined':''}" onclick="rejoindreRight('${c._id}',this)">${c.is_member?'✅':'➕'}</button>
+    </div>`).join('');
+}
+
+async function rejoindreRight(id,btn){
+  const r=await fetch('/api/rejoindre/'+id,{method:'POST'}).then(r=>r.json());
+  btn.textContent=r.joined?'✅':'➕';
+  btn.className='join-btn'+(r.joined?' joined':'');
+}
+
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function openCreateComm(){openModal('modal-comm');}
+
+document.getElementById('search-input').addEventListener('input',function(){
+  const q=this.value.toLowerCase();
+  document.querySelectorAll('.post-card').forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(q)?'block':'none';});
+});
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>AgroConnect — Connexion</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;background:linear-gradient(135deg,#0a2e1a,#1a5c35,#2d6a4f);display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',sans-serif;}
+.box{background:white;border-radius:20px;padding:50px 40px;width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.logo{text-align:center;margin-bottom:30px;}
+.logo-icon{font-size:56px;}
+.logo h1{font-size:28px;color:#1b4332;font-weight:800;margin-top:8px;}
+.logo p{color:#666;font-size:14px;margin-top:4px;}
+label{display:block;font-size:13px;font-weight:700;color:#333;margin-bottom:8px;}
+input[type=text], input[type=password]{width:100%;padding:14px 16px;border:2px solid #e0e0e0;border-radius:10px;font-size:15px;outline:none;transition:border-color 0.2s;margin-bottom:20px;}
+input[type=text]:focus, input[type=password]:focus{border-color:#2d6a4f;}
+.btn{width:100%;padding:15px;background:linear-gradient(135deg,#1b4332,#2d6a4f);color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:transform 0.2s;}
+.btn:hover{transform:translateY(-2px);}
+.error{background:#fee2e2;color:#dc2626;padding:12px;border-radius:8px;margin-bottom:20px;font-size:14px;}
+.hint{margin-top:20px;background:#f0fdf4;border-radius:12px;padding:16px;}
+.hint-title{font-size:13px;font-weight:700;color:#1b4332;margin-bottom:10px;}
+.pseudo-list{display:flex;flex-wrap:wrap;gap:6px;}
+.pseudo-chip{background:#d1fae5;color:#065f46;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:background 0.2s;}
+.pseudo-chip:hover{background:#a7f3d0;}
+.loading{color:#888;font-size:13px;}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">
+    <div class="logo-icon">🌾</div>
+    <h1>AgroConnect</h1>
+    <p>Le réseau social des agriculteurs sénégalais</p>
+  </div>
+  {% if error %}
+  <div class="error">{{ error }}</div>
+  {% endif %}
+  <form method="POST" action="/login">
+    <label>Votre pseudo</label>
+    <input type="text" name="pseudo" id="pseudo-input" placeholder="Entrez votre pseudo..." required autocomplete="off">
+    <label>Mot de passe</label>
+    <input type="password" name="password" placeholder="Votre mot de passe" required>
+    <button type="submit" class="btn">Se connecter 🚀</button>
+  </form>
+  <div style="text-align:center;margin-top:20px;padding-top:20px;border-top:1px solid #e0e0e0;">
+    <p style="font-size:13px;color:#666;margin-bottom:10px;">Nouveau sur AgroConnect ?</p>
+    <a href="/register" style="display:inline-block;background:linear-gradient(135deg,#40916c,#52b788);color:white;padding:12px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;transition:opacity 0.2s;">Créer un compte</a>
+  </div>
+  <div class="hint" style="margin-top:20px;">
+    <div class="hint-title">🔓 Comptes de test disponibles :</div>
+    <div class="pseudo-list" id="pseudo-list"><span class="loading">Chargement...</span></div>
+  </div>
+</div>
+<script>
+  // Attendre que la page soit bien chargée
+  window.onload = function() {
+    fetch('/api/utilisateurs')
+      .then(function(r) {
+        if (!r.ok) throw new Error('Erreur ' + r.status);
+        return r.json();
+      })
+      .then(function(users) {
+        var list = document.getElementById('pseudo-list');
+        if (!users || users.length === 0) {
+          list.innerHTML = '<span class="loading">Aucun utilisateur trouvé</span>';
+          return;
+        }
+        list.innerHTML = '';
+        users.forEach(function(u) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'pseudo-chip';
+          btn.textContent = u.avatar + ' ' + u.pseudo;
+          btn.onclick = function() {
+            document.getElementById('pseudo-input').value = u.pseudo;
+          };
+          list.appendChild(btn);
+        });
+      })
+      .catch(function(err) {
+        document.getElementById('pseudo-list').innerHTML = '<span class="loading">Erreur: ' + err.message + '</span>';
+      });
+  };
+
+</script>
+</body>
+</html>

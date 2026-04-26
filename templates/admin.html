@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>AgroConnect — Panel Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--gd:#0a2e1a;--gm:#1a5c35;--gb:#2ecc71;--gold:#f0b429;--glass:rgba(255,255,255,0.06);--border:rgba(46,204,113,0.15);}
+body{font-family:'Segoe UI',sans-serif;background:var(--gd);color:white;min-height:100vh;}
+.navbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,46,26,0.97);backdrop-filter:blur(12px);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.nav-left{display:flex;align-items:center;gap:20px;}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-logo-text{font-weight:800;font-size:20px;background:linear-gradient(90deg,var(--gb),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-badge{background:#dc2626;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-btn{background:transparent;border:1px solid rgba(46,204,113,0.25);color:rgba(255,255,255,0.65);padding:7px 14px;border-radius:22px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.nav-btn:hover{background:rgba(46,204,113,0.15);border-color:var(--gb);color:var(--gb);}
+.container{max-width:1200px;margin:0 auto;padding:76px 20px 40px;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:30px;}
+@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
+.stat-card{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:20px;text-align:center;}
+.stat-num{font-size:32px;font-weight:800;color:var(--gb);}
+.stat-label{font-size:13px;color:rgba(255,255,255,0.5);margin-top:8px;}
+.section{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px;}
+.section-title{font-size:18px;font-weight:800;color:var(--gb);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.table-responsive{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{background:rgba(46,204,113,0.08);padding:12px;text-align:left;font-weight:700;font-size:12px;color:var(--gb);border-bottom:1px solid var(--border);}
+td{padding:12px;border-bottom:1px solid rgba(46,204,113,0.08);font-size:13px;}
+tr:hover{background:rgba(46,204,113,0.04);}
+.role-badge{display:inline-block;padding:4px 12px;border-radius:12px;font-size:11px;font-weight:700;}
+.role-admin{background:rgba(220,38,38,0.2);color:#fca5a5;}
+.role-user{background:rgba(59,130,246,0.2);color:#93c5fd;}
+.action-btns{display:flex;gap:6px;}
+.btn-sm{background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;transition:all 0.2s;}
+.btn-sm:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.4);}
+.btn-sm.danger:hover{background:rgba(220,38,38,0.2);border-color:#dc2626;color:#fca5a5;}
+.btn-sm.success:hover{background:rgba(34,197,94,0.2);border-color:#22c55e;color:#86efac;}
+.loading{text-align:center;padding:40px;color:rgba(255,255,255,0.5);}
+</style>
+</head>
+<body>
+<div class="navbar">
+  <div class="nav-left">
+    <div class="nav-logo">
+      <span class="nav-logo-text">🌾 AgroConnect — Admin</span>
+    </div>
+    <div class="nav-badge">ADMIN</div>
+  </div>
+  <div class="nav-right">
+    <a href="/home" class="nav-btn">← Retour</a>
+    <a href="/logout" class="nav-btn">Déconnexion</a>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Statistiques -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-users">{{ total_users }}</div>
+      <div class="stat-label">Utilisateurs</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-admins">0</div>
+      <div class="stat-label">Administrateurs</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-pubs">{{ total_pubs }}</div>
+      <div class="stat-label">Publications</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-comms">{{ total_comms }}</div>
+      <div class="stat-label">Communautés</div>
+    </div>
+  </div>
+
+  <!-- Gestion des utilisateurs -->
+  <div class="section">
+    <div class="section-title">📋 Gestion des utilisateurs</div>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Pseudo</th>
+            <th>Nom</th>
+            <th>Région</th>
+            <th>Rôle</th>
+            <th>Abonnés</th>
+            <th>Inscription</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="users-table">
+          <tr><td colspan="7" class="loading">Chargement...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// Charger les stats
+async function loadStats() {
+  try {
+    const res = await fetch('/api/admin/stats');
+    const data = await res.json();
+    document.getElementById('stat-admins').textContent = data.total_admins;
+    document.getElementById('stat-users').textContent = data.total_users;
+    document.getElementById('stat-pubs').textContent = data.total_publications;
+    document.getElementById('stat-comms').textContent = data.total_communautes;
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// Charger la liste des utilisateurs
+async function loadUsers() {
+  try {
+    const res = await fetch('/api/admin/utilisateurs');
+    if (!res.ok) throw new Error('Erreur ' + res.status);
+    const users = await res.json();
+    const tbody = document.getElementById('users-table');
+    tbody.innerHTML = users.map(u => `
+      <tr>
+        <td><strong>${u.pseudo}</strong></td>
+        <td>${u.nom}</td>
+        <td>${u.region}</td>
+        <td><span class="role-badge role-${u.role}">${u.role.toUpperCase()}</span></td>
+        <td>${u.nb_followers}</td>
+        <td>${u.date_inscription}</td>
+        <td>
+          <div class="action-btns">
+            <button class="btn-sm success" onclick="toggleRole('${u._id}', '${u.role}')">
+              ${u.role === 'admin' ? '👤 User' : '👨‍💼 Admin'}
+            </button>
+            <button class="btn-sm danger" onclick="deleteUser('${u._id}', '${u.pseudo}')">🗑️ Supprimer</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  } catch (e) {
+    console.error(e);
+    document.getElementById('users-table').innerHTML = '<tr><td colspan="7" style="color:red;">Erreur de chargement</td></tr>';
+  }
+}
+
+// Changer le rôle d'un utilisateur
+async function toggleRole(userId, currentRole) {
+  const newRole = currentRole === 'admin' ? 'user' : 'admin';
+  if (!confirm(`Passer ${newRole === 'admin' ? 'en admin' : 'en utilisateur'} ?`)) return;
+  
+  try {
+    const res = await fetch(`/api/admin/utilisateur/${userId}/role`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({role: newRole})
+    });
+    if (res.ok) {
+      alert('Rôle modifié !');
+      loadUsers();
+      loadStats();
+    } else {
+      alert('Erreur');
+    }
+  } catch (e) {
+    console.error(e);
+    alert('Erreur');
+  }
+}
+
+// Supprimer un utilisateur
+async function deleteUser(userId, pseudo) {
+  if (!confirm(`⚠️ Supprimer l'utilisateur "${pseudo}" ? Cette action est irréversible.`)) return;
+  
+  try {
+    const res = await fetch(`/api/admin/utilisateur/${userId}/delete`, {method: 'POST'});
+    if (res.ok) {
+      alert('Utilisateur supprimé');
+      loadUsers();
+      loadStats();
+    } else {
+      alert('Erreur');
+    }
+  } catch (e) {
+    console.error(e);
+    alert('Erreur');
+  }
+}
+
+// Initialiser
+window.addEventListener('load', () => {
+  loadStats();
+  loadUsers();
+});
+</script>
+</body>
+</html>

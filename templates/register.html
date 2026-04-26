@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>AgroConnect — Inscription</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;background:linear-gradient(135deg,#0a2e1a,#1a5c35,#2d6a4f);display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',sans-serif;}
+.container{display:flex;gap:30px;align-items:stretch;max-width:1000px;width:90%;}
+.box{background:white;border-radius:20px;padding:40px;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.left{flex:1;display:flex;flex-direction:column;justify-content:center;color:#1b4332;}
+.left h1{font-size:32px;font-weight:800;margin-bottom:16px;}
+.left p{font-size:15px;color:#666;line-height:1.6;margin-bottom:12px;}
+.benefits{list-style:none;margin-top:20px;}
+.benefits li{display:flex;gap:10px;margin-bottom:12px;font-size:13px;color:#555;}
+.benefits li:before{content:"✓";color:#2d6a4f;font-weight:800;font-size:16px;}
+.right{flex:1;max-width:500px;}
+.logo{text-align:center;margin-bottom:24px;}
+.logo-icon{font-size:48px;}
+.logo h2{font-size:24px;color:#1b4332;font-weight:800;margin-top:8px;}
+.form-group{margin-bottom:18px;}
+label{display:block;font-size:12px;font-weight:700;color:#333;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
+input,select{width:100%;padding:12px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:14px;outline:none;transition:border-color 0.2s;font-family:inherit;}
+input:focus,select:focus{border-color:#2d6a4f;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-row .form-group{margin-bottom:18px;}
+.btn{width:100%;padding:14px;background:linear-gradient(135deg,#1b4332,#2d6a4f);color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:transform 0.2s;}
+.btn:hover{transform:translateY(-2px);}
+.error{background:#fee2e2;color:#dc2626;padding:12px;border-radius:8px;margin-bottom:16px;font-size:13px;border-left:4px solid #dc2626;}
+.login-link{text-align:center;margin-top:20px;font-size:13px;color:#666;}
+.login-link a{color:#2d6a4f;font-weight:700;text-decoration:none;}
+.login-link a:hover{text-decoration:underline;}
+.pass-info{background:#f0fdf4;border-radius:8px;padding:10px;font-size:11px;color:#166534;margin-top:4px;line-height:1.4;}
+@media(max-width:900px){.container{flex-direction:column;}.left{display:none;}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="left">
+    <h1>Rejoins AgroConnect</h1>
+    <p>Connecte-toi avec les agriculteurs sénégalais, vends tes produits, et développe ton réseau agricole.</p>
+    <ul class="benefits">
+      <li>Vends et achète des produits agricoles en ligne</li>
+      <li>Connecte-toi avec des milliers de fermiers</li>
+      <li>Partage tes conseils et expériences</li>
+      <li>Accède au marché sénégalais</li>
+      <li>Reçois des notifications en temps réel</li>
+    </ul>
+  </div>
+
+  <div class="right">
+    <div class="box">
+      <div class="logo">
+        <div class="logo-icon">🌾</div>
+        <h2>Créer un compte</h2>
+      </div>
+
+      {% if error %}
+      <div class="error">{{ error }}</div>
+      {% endif %}
+
+      <form method="POST" action="/register">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Pseudo *</label>
+            <input type="text" name="pseudo" placeholder="Votre identité unique" required>
+            <div class="pass-info">Min. 3 caractères</div>
+          </div>
+          <div class="form-group">
+            <label>Nom complet *</label>
+            <input type="text" name="nom" placeholder="Votre nom" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Région *</label>
+            <select name="region" required>
+              <option value="Dakar">Dakar</option>
+              <option value="Thiès">Thiès</option>
+              <option value="Saint-Louis">Saint-Louis</option>
+              <option value="Ziguinchor">Ziguinchor</option>
+              <option value="Kaolack">Kaolack</option>
+              <option value="Diourbel">Diourbel</option>
+              <option value="Tambacounda">Tambacounda</option>
+              <option value="Kolda">Kolda</option>
+              <option value="Fatick">Fatick</option>
+              <option value="Kaffrine">Kaffrine</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Type de culture *</label>
+            <select name="type_culture" required>
+              <option value="Mil">Mil</option>
+              <option value="Arachide">Arachide</option>
+              <option value="Riz">Riz</option>
+              <option value="Maïs">Maïs</option>
+              <option value="Coton">Coton</option>
+              <option value="Sorgho">Sorgho</option>
+              <option value="Niébé">Niébé</option>
+              <option value="Sésame">Sésame</option>
+              <option value="Pastèque">Pastèque</option>
+              <option value="Tomate">Tomate</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Mot de passe *</label>
+            <input type="password" name="password" placeholder="Votre mot de passe" required>
+            <div class="pass-info">Min. 6 caractères</div>
+          </div>
+          <div class="form-group">
+            <label>Confirmer le mot de passe *</label>
+            <input type="password" name="password_confirm" placeholder="Confirmer" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn">Créer mon compte 🚀</button>
+      </form>
+
+      <div class="login-link">
+        Déjà inscrit ? <a href="/login">Se connecter</a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
