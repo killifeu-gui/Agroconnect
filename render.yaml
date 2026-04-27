@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: agroconnect
+    env: python
+    region: frankfurt
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 4 -b 0.0.0.0:$PORT app:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        value: agroconnect_secret_2024_production
+      - key: MONGO_URI
+        sync: false
